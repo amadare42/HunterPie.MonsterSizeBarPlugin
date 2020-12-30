@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{8F23895D-8F05-4AEC-9045-45B5E9212B81}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Plugin.MonsterSizeBar</RootNamespace>
+        <AssemblyName>Plugin.MonsterSizeBar</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="HunterPie.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>.\HunterPie\libs\HunterPie.Core.dll</HintPath>
+            <HintPath Condition="Exists('.\HunterPie\libs\HunterPie.Core.dll')">.\HunterPie\libs\HunterPie.Core.dll</HintPath>
+            <HintPath Condition="Exists('..\..\HunterPie\HunterPie\bin\Debug\HunterPie.Core.dll')">..\..\HunterPie\HunterPie\bin\Debug\HunterPie.Core.dll</HintPath>
+            <Private>True</Private>
+        </Reference>
+        <Reference Include="HunterPie.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>.\HunterPie\libs\HunterPie.UI.dll</HintPath>
+            <HintPath Condition="Exists('.\HunterPie\libs\HunterPie.UI.dll')">.\HunterPie\libs\HunterPie.UI.dll</HintPath>
+            <HintPath Condition="Exists('..\..\HunterPie\HunterPie\bin\Debug\HunterPie.UI.dll')">..\..\HunterPie\HunterPie\bin\Debug\HunterPie.UI.dll</HintPath>
+            <Private>True</Private>
+        </Reference>
+        <Reference Include="PresentationCore" />
+        <Reference Include="PresentationFramework" />
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xaml" />
+        <Reference Include="System.Xml" />
+        <Reference Include="WindowsBase" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="MonsterSizeBarPlugin.cs" />
+        <Compile Include="MonsterSizeControl.xaml.cs">
+            <DependentUpon>MonsterSizeControl.xaml</DependentUpon>
+        </Compile>
+        <Page Include="MonsterSizeControl.xaml">
+            <SubType>Designer</SubType>
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="DefaultTheme.xaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="module.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <PropertyGroup>
+        <PreBuildEvent>
+            if not exist "$(ProjectDir)HunterPie\libs\HunterPie.Core.dll" if not exist "$(ProjectDir)..\..\HunterPie\HunterPie\bin\Debug\HunterPie.Core.dll" (
+                echo "HunterPie.Core.dll not found, downloading..."
+                powershell.exe -ExecutionPolicy Bypass "$(ProjectDir)build\Download-HunterPie.ps1"
+                if not %errorlevel% == 0 exit %errorlevel%
+            )
+            powershell.exe -ExecutionPolicy Bypass "$(ProjectDir)build\Update-AssemblyVersion.ps1" -path '$(ProjectDir)Properties\AssemblyInfo.cs'
+            if not %errorlevel% == 0 exit %errorlevel%
+        </PreBuildEvent>
+        <PostBuildEvent>
+            powershell.exe -ExecutionPolicy Bypass "$(ProjectDir)build\Update-ModuleJson.ps1" -root '$(TargetDir)'
+            if not %errorlevel% == 0 exit %errorlevel%
+        </PostBuildEvent>
+    </PropertyGroup>
+
+</Project>

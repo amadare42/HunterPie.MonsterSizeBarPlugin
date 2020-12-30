@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="Plugin.MonsterSizeBar.MonsterSizeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             x:Name="SizeControlWidget"
+             Style="{StaticResource OVERLAY_MONSTER_SIZE_CONTAINER}"
+             DataContext="{Binding ElementName=SizeControlWidget}"
+             d:DesignHeight="42" d:DesignWidth="230">
+    <Grid>
+        <Rectangle Width="{Binding BarWidth}"
+                   HorizontalAlignment="Left"
+                   Style="{StaticResource OVERLAY_MONSTER_SIZE_BAR}"/>
+
+        <Rectangle x:Name="MiniNotch"
+                   Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_MINI}"
+                   Margin="{Binding Path=MiniNotchShift }" />
+
+        <Rectangle x:Name="MiddleNotch"
+                   Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_MIDDLE}"
+                   Margin="{Binding Path=MiddleNotchShift }" />
+
+        <Rectangle x:Name="SilverNotch"
+                   Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_SILVER}"
+                   Margin="{Binding Path=SilverNotchShift }" />
+
+        <Rectangle x:Name="GoldNotch"
+                   Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_GOLD}"
+                   Margin="{Binding Path=GoldNotchShift }" />
+    </Grid>
+</UserControl>

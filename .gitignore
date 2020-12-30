@@ -1,0 +1,12 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.vs/
+.idea/
+*.DotSettings.user
+!/Plugin.MonsterSizeBar/bin/Release/Plugin.MonsterSizeBar.dll
+!/Plugin.MonsterSizeBar/bin/Release/module.json
+!/Plugin.MonsterSizeBar/bin/Release/DefaultTheme.xaml
+/Plugin.MonsterSizeBar/HunterPie/
