@@ -89,7 +89,10 @@ namespace Plugin.MonsterSizeBar
                 {
                     try
                     {
-                        ((Grid) control.Parent).Children.Remove(control);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ((Grid) control.Parent).Children.Remove(control);
+                        });
                     }
                     catch (Exception ex)
                     {
