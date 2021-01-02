@@ -24,16 +24,40 @@ namespace Plugin.MonsterSizeBar
             this.Context.Player.OnPeaceZoneEnter += PlayerOnOnPeaceZoneEnter;
 
             LoadDefaultTheme();
-            
+
+            Action change = UpdateMonsters;
+            this.debouncedOnMonsterUpdate = change.Debounce(1000);
             foreach (var monster in this.Context.Monsters)
             {
-                monster.OnMonsterSpawn += MonsterOnChange;
-                monster.OnCrownChange += MonsterOnChange;
+                monster.OnMonsterSpawn += OnMonsterUpdate;
+                monster.OnCrownChange += OnMonsterUpdate;
             }
 
             if (Context.Monsters.Any(m => m.IsAlive))
             {
-                MonsterOnChange(null, null);
+                UpdateMonsters();
+            }
+        }
+        
+        public void Unload()
+        {
+            // unsub
+            this.Context.Player.OnPeaceZoneEnter -= PlayerOnOnPeaceZoneEnter;
+            foreach (var monster in this.Context.Monsters)
+            {
+                monster.OnMonsterSpawn -= OnMonsterUpdate;
+                monster.OnCrownChange -= OnMonsterUpdate;
+            }
+
+            // remove injected controls
+            RemoveInjectedControls();
+            
+            // remove theme
+            var theme = Application.Current.Resources.MergedDictionaries.FirstOrDefault(dict =>
+                dict.Contains("OVERLAY_MONSTER_SIZE_BAR"));
+            if (theme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(theme);
             }
         }
 
@@ -54,12 +78,35 @@ namespace Plugin.MonsterSizeBar
 
         private void PlayerOnOnPeaceZoneEnter(object source, EventArgs args)
         {
-            // existing controls will be collected by GC
-            this.sizeControls = new MonsterSizeControl[0];
-            this.controlsInjected = false;
+            RemoveInjectedControls();
         }
 
-        private void MonsterOnChange(object source, EventArgs args)
+        private void RemoveInjectedControls()
+        {
+            if (this.controlsInjected)
+            {
+                foreach (var control in this.sizeControls)
+                {
+                    try
+                    {
+                        ((Grid) control.Parent).Children.Remove(control);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debugger.Warn("Error on removing size bar: " + ex);
+                    }
+                }
+
+                // existing controls will be collected by GC
+                this.sizeControls = new MonsterSizeControl[0];
+            }
+            this.controlsInjected = false;
+        }
+        
+        private Action debouncedOnMonsterUpdate;
+        private void OnMonsterUpdate(object sender, EventArgs args) => this.debouncedOnMonsterUpdate?.Invoke();
+
+        private void UpdateMonsters()
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -71,25 +118,6 @@ namespace Plugin.MonsterSizeBar
             });
         }
 
-        public void Unload()
-        {
-            this.Context.Player.OnPeaceZoneEnter -= PlayerOnOnPeaceZoneEnter;
-            foreach (var monster in this.Context.Monsters)
-            {
-                monster.OnMonsterSpawn -= MonsterOnChange;
-                monster.OnCrownChange -= MonsterOnChange;
-            }
-
-            if (this.controlsInjected)
-            {
-                foreach (var control in this.sizeControls)
-                {
-                    ((Grid)control.Parent).Children.Remove(control);
-                }
-
-                this.sizeControls = new MonsterSizeControl[0];
-            }
-        }
 
         private void CreateBars()
         {
@@ -142,14 +170,24 @@ namespace Plugin.MonsterSizeBar
 
         private void UpdateBars()
         {
-            if (!this.controlsInjected) return;
+            if (!this.controlsInjected || this.sizeControls.Length == 0) return;
             for (var i = 0; i < this.Context.Monsters.Length; i++)
             {
                 var m = this.Context.Monsters[i];
                 var control = this.sizeControls[i];
+                
+                if (string.IsNullOrEmpty(m.Id) || !m.IsAlive)
+                {
+                    continue;
+                }
 
                 Application.Current.Dispatcher.Invoke(() =>
-                    control.Update(MonsterData.MonstersInfo[m.GameId].Crowns, m.SizeMultiplier));
+                {
+                    if (MonsterData.MonstersInfo.TryGetValue(m.GameId, out var monsterInfo))
+                    {
+                        control.Update(monsterInfo.Crowns, m.SizeMultiplier);
+                    }
+                });
             }
         }
 

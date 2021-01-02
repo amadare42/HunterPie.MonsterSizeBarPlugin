@@ -14,8 +14,8 @@ namespace Plugin.MonsterSizeBar
     {
         public MonsterSizeControl()
         {
-            SetDefaultNotchValues();
             InitializeComponent();
+            SetDefaultNotchValues();
         }
 
         public Thickness MiniNotchShift { get; set; }
@@ -23,8 +23,9 @@ namespace Plugin.MonsterSizeBar
         public Thickness SilverNotchShift { get; set; }
         public Thickness GoldNotchShift { get; set; }
         public double BarWidth { get; set; }
+        public float SizeModifier { get; private set; }
 
-        public double TotalWidth = 230;
+        public double TotalWidth => ((this.SizeControlWidget.Parent as Grid)?.FindName("MonsterHealthBar") as UserControl)?.ActualWidth ?? 230;
 
         public void Update(CrownInfo crowns, float size)
         {
@@ -37,12 +38,15 @@ namespace Plugin.MonsterSizeBar
             SilverNotchShift = CreateLeftThickness((crowns.Silver - minSize) / alocatedSize);
             GoldNotchShift = CreateLeftThickness((crowns.Gold - minSize) / alocatedSize);
             BarWidth = TotalWidth * ((size - minSize) / alocatedSize);
+            this.SizeModifier = size;
             
             InvokePropertyChanged(nameof(MiniNotchShift));
             InvokePropertyChanged(nameof(MiddleNotchShift));
             InvokePropertyChanged(nameof(SilverNotchShift));
             InvokePropertyChanged(nameof(GoldNotchShift));
             InvokePropertyChanged(nameof(BarWidth));
+            InvokePropertyChanged(nameof(TotalWidth));
+            InvokePropertyChanged(nameof(this.SizeModifier));
         }
 
         private void SetDefaultNotchValues()
@@ -52,6 +56,7 @@ namespace Plugin.MonsterSizeBar
             SilverNotchShift = CreateLeftThickness(TotalWidth * .65);
             GoldNotchShift = CreateLeftThickness(TotalWidth * .95);
             BarWidth = .25;
+            this.SizeModifier = 1;
         }
         
         private Thickness CreateLeftThickness(double left) => new Thickness(TotalWidth * left, 0, 0, 0);

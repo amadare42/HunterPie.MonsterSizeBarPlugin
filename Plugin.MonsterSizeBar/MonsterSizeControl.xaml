@@ -8,25 +8,28 @@
              Style="{StaticResource OVERLAY_MONSTER_SIZE_CONTAINER}"
              DataContext="{Binding ElementName=SizeControlWidget}"
              d:DesignHeight="42" d:DesignWidth="230">
-    <Grid>
+    <Grid Width="{Binding TotalWidth}">
         <Rectangle Width="{Binding BarWidth}"
                    HorizontalAlignment="Left"
                    Style="{StaticResource OVERLAY_MONSTER_SIZE_BAR}"/>
 
         <Rectangle x:Name="MiniNotch"
                    Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_MINI}"
-                   Margin="{Binding Path=MiniNotchShift }" />
+                   Margin="{Binding MiniNotchShift}" />
 
         <Rectangle x:Name="MiddleNotch"
                    Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_MIDDLE}"
-                   Margin="{Binding Path=MiddleNotchShift }" />
+                   Margin="{Binding MiddleNotchShift}" />
 
         <Rectangle x:Name="SilverNotch"
                    Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_SILVER}"
-                   Margin="{Binding Path=SilverNotchShift }" />
+                   Margin="{Binding SilverNotchShift}" />
 
         <Rectangle x:Name="GoldNotch"
                    Style="{StaticResource OVERLAY_MONSTER_SIZE_NOTCH_GOLD}"
-                   Margin="{Binding Path=GoldNotchShift }" />
+                   Margin="{Binding GoldNotchShift}" />
+
+        <TextBlock Style="{StaticResource OVERLAY_MONSTER_SIZE_BAR_TEXT}"
+                   Text="{Binding SizeModifier}" />
     </Grid>
 </UserControl>
