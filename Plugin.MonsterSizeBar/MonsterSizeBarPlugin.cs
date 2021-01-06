@@ -26,11 +26,12 @@ namespace Plugin.MonsterSizeBar
             LoadDefaultTheme();
 
             Action change = UpdateMonsters;
-            this.debouncedOnMonsterUpdate = change.Debounce(1000);
+            this.debouncedOnMonsterUpdate = change.Debounce(200);
             foreach (var monster in this.Context.Monsters)
             {
                 monster.OnMonsterSpawn += OnMonsterUpdate;
                 monster.OnCrownChange += OnMonsterUpdate;
+                monster.OnMonsterDespawn += OnMonsterUpdate;
             }
 
             if (Context.Monsters.Any(m => m.IsAlive))
@@ -47,6 +48,7 @@ namespace Plugin.MonsterSizeBar
             {
                 monster.OnMonsterSpawn -= OnMonsterUpdate;
                 monster.OnCrownChange -= OnMonsterUpdate;
+                monster.OnMonsterDespawn -= OnMonsterUpdate;
             }
 
             // remove injected controls
