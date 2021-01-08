@@ -1,5 +1,6 @@
 ﻿{
   "Name": "Plugin.MonsterSizeBar",
+  "DisplayName": "Monster size bar",
   "Description": "Adds monster size bars for monsters widget",
   "Author": "Amadare",
   "Version": "$version:Plugin.MonsterSizeBar.dll$",
