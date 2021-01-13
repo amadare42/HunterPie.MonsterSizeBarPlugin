@@ -22,7 +22,8 @@ namespace Plugin.MonsterSizeBar
         {
             this.Context = context;
             this.Context.Player.OnPeaceZoneEnter += PlayerOnOnPeaceZoneEnter;
-
+            this.Context.Player.OnPeaceZoneLeave += OnMonsterUpdate;
+            
             LoadDefaultTheme();
 
             Action change = UpdateMonsters;
@@ -32,6 +33,7 @@ namespace Plugin.MonsterSizeBar
                 monster.OnMonsterSpawn += OnMonsterUpdate;
                 monster.OnCrownChange += OnMonsterUpdate;
                 monster.OnMonsterDespawn += OnMonsterUpdate;
+                monster.OnMonsterDeath += OnMonsterUpdate;
             }
 
             if (Context.Monsters.Any(m => m.IsAlive))
@@ -44,11 +46,14 @@ namespace Plugin.MonsterSizeBar
         {
             // unsub
             this.Context.Player.OnPeaceZoneEnter -= PlayerOnOnPeaceZoneEnter;
+            this.Context.Player.OnPeaceZoneLeave -= OnMonsterUpdate;
+            
             foreach (var monster in this.Context.Monsters)
             {
                 monster.OnMonsterSpawn -= OnMonsterUpdate;
                 monster.OnCrownChange -= OnMonsterUpdate;
                 monster.OnMonsterDespawn -= OnMonsterUpdate;
+                monster.OnMonsterDeath -= OnMonsterUpdate;
             }
 
             // remove injected controls

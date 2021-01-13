@@ -72,6 +72,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="module.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -86,10 +89,10 @@
             )
             powershell.exe -ExecutionPolicy Bypass "$(ProjectDir)build\Update-AssemblyVersion.ps1" -path '$(ProjectDir)Properties\AssemblyInfo.cs'
             if not %errorlevel% == 0 exit %errorlevel%
-        </PreBuildEvent>
+    </PreBuildEvent>
     <PostBuildEvent>
             powershell.exe -ExecutionPolicy Bypass "$(ProjectDir)build\Update-ModuleJson.ps1" -root '$(TargetDir)'
             if not %errorlevel% == 0 exit %errorlevel%
-        </PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

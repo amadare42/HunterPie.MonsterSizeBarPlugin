@@ -10,6 +10,7 @@
     "MinimumVersion": "1.0.3.99",
     "FileHashes": {
       "Plugin.MonsterSizeBar.dll": "$version:Plugin.MonsterSizeBar.dll$",
+      "icon.png": "$hash:icon.png$",
       "DefaultTheme.xaml": "InstallOnly"
     }
   }
