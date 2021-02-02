@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d"
              x:Name="SizeControlWidget"
+             Panel.ZIndex="1000"
              Style="{StaticResource OVERLAY_MONSTER_SIZE_CONTAINER}"
              DataContext="{Binding ElementName=SizeControlWidget}"
              d:DesignHeight="42" d:DesignWidth="230">

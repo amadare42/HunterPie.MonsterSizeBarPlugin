@@ -3,19 +3,65 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using HunterPie.Core.Monsters;
 
 namespace Plugin.MonsterSizeBar
 {
+    public class SizeSnapshot
+    {
+        public CrownInfo CrownInfo { get; set; }
+        public float Size { get; set; }
+
+        public SizeSnapshot(CrownInfo crownInfo, float size)
+        {
+            this.CrownInfo = crownInfo;
+            this.Size = size;
+        }
+    }
+    
     /// <summary>
     /// Interaction logic for MonsterSizeControl.xaml
     /// </summary>
     public partial class MonsterSizeControl : UserControl, INotifyPropertyChanged
     {
+        private SizeSnapshot LastSnapshot { get; set; }
+        private double lastWidth { get; set; }
+        
         public MonsterSizeControl()
         {
             InitializeComponent();
             SetDefaultNotchValues();
+            CompositionTarget.Rendering += CompositionTargetOnRendering;
+        }
+
+        ~MonsterSizeControl()
+        {
+            CompositionTarget.Rendering -= CompositionTargetOnRendering;
+        }
+
+        private void CompositionTargetOnRendering(object sender, EventArgs e)
+        {
+            if (LastSnapshot != null && lastWidth != ParentWidth)
+            {
+                Update(LastSnapshot.CrownInfo, LastSnapshot.Size);
+                this.lastWidth = this.ParentWidth;
+            }
+        }
+        
+        private double ParentWidth
+        {
+            get
+            {
+                try
+                {
+                    return ((Grid) this.Parent).ActualWidth;
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
         }
 
         public Thickness MiniNotchShift { get; set; }
@@ -26,9 +72,11 @@ namespace Plugin.MonsterSizeBar
         public float SizeModifier { get; private set; }
 
         public double TotalWidth => ((this.SizeControlWidget.Parent as Grid)?.FindName("MonsterHealthBar") as UserControl)?.ActualWidth ?? 230;
-
+        
         public void Update(CrownInfo crowns, float size)
         {
+            this.LastSnapshot = new SizeSnapshot(crowns, size);
+            
             var maxSize = Math.Max(crowns.Gold, size) * 1.05f;
             var minSize = Math.Min(crowns.Mini, size) * 0.9f;
             var alocatedSize = maxSize - minSize;

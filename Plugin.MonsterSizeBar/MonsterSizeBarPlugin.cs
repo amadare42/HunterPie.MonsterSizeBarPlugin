@@ -15,8 +15,8 @@ namespace Plugin.MonsterSizeBar
 {
     public class MonsterSizeBarPlugin : IPlugin
     {
-        private bool controlsInjected;
         private MonsterSizeControl[] sizeControls = new MonsterSizeControl[0];
+        private bool ControlsInjected => this.sizeControls.Any();
         
         public void Initialize(Game context)
         {
@@ -32,8 +32,10 @@ namespace Plugin.MonsterSizeBar
             {
                 monster.OnMonsterSpawn += OnMonsterUpdate;
                 monster.OnCrownChange += OnMonsterUpdate;
+                
                 monster.OnMonsterDespawn += OnMonsterUpdate;
                 monster.OnMonsterDeath += OnMonsterUpdate;
+                monster.OnMonsterCapture += OnMonsterUpdate;
             }
 
             if (Context.Monsters.Any(m => m.IsAlive))
@@ -41,7 +43,7 @@ namespace Plugin.MonsterSizeBar
                 UpdateMonsters();
             }
         }
-        
+
         public void Unload()
         {
             // unsub
@@ -52,8 +54,10 @@ namespace Plugin.MonsterSizeBar
             {
                 monster.OnMonsterSpawn -= OnMonsterUpdate;
                 monster.OnCrownChange -= OnMonsterUpdate;
+                
                 monster.OnMonsterDespawn -= OnMonsterUpdate;
                 monster.OnMonsterDeath -= OnMonsterUpdate;
+                monster.OnMonsterCapture -= OnMonsterUpdate;
             }
 
             // remove injected controls
@@ -90,16 +94,13 @@ namespace Plugin.MonsterSizeBar
 
         private void RemoveInjectedControls()
         {
-            if (this.controlsInjected)
+            Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var control in this.sizeControls)
                 {
                     try
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            ((Grid) control.Parent).Children.Remove(control);
-                        });
+                        ((Grid) control.Parent).Children.Remove(control);
                     }
                     catch (Exception ex)
                     {
@@ -109,8 +110,7 @@ namespace Plugin.MonsterSizeBar
 
                 // existing controls will be collected by GC
                 this.sizeControls = new MonsterSizeControl[0];
-            }
-            this.controlsInjected = false;
+            });
         }
         
         private Action debouncedOnMonsterUpdate;
@@ -120,10 +120,9 @@ namespace Plugin.MonsterSizeBar
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (!this.controlsInjected)
-                {
-                    CreateBars();
-                }
+                // not very elegant, but will work - recreate controls on every update
+                RemoveInjectedControls();
+                CreateBars();
                 UpdateBars();
             });
         }
@@ -171,16 +170,13 @@ namespace Plugin.MonsterSizeBar
                 catch (Exception ex)
                 {
                     Debugger.Error("Cannot add size bars! " + ex);
-                    return;
                 }
-
-                this.controlsInjected = true;
             });
         }
 
         private void UpdateBars()
         {
-            if (!this.controlsInjected || this.sizeControls.Length == 0) return;
+            if (!this.ControlsInjected) return;
             for (var i = 0; i < this.Context.Monsters.Length; i++)
             {
                 var m = this.Context.Monsters[i];
