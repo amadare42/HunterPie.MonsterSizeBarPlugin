@@ -121,7 +121,11 @@ namespace Plugin.MonsterSizeBar
             Application.Current.Dispatcher.Invoke(() =>
             {
                 // not very elegant, but will work - recreate controls on every update
-                RemoveInjectedControls();
+                if (ControlsInjected)
+                {
+                    RemoveInjectedControls();
+                }
+
                 CreateBars();
                 UpdateBars();
             });

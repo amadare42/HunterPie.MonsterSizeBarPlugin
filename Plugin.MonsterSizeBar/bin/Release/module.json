@@ -3,13 +3,13 @@
   "DisplayName": "Monster size bar",
   "Description": "Adds monster size bars for monsters widget",
   "Author": "Amadare",
-  "Version": "1.0.1.6",
+  "Version": "1.0.1.7",
   "Dependencies": [],
   "Update": {
     "UpdateUrl": "https://raw.githubusercontent.com/amadare42/HunterPie.MonsterSizeBarPlugin/master/Plugin.MonsterSizeBar/bin/Release",
     "MinimumVersion": "1.0.3.99",
     "FileHashes": {
-      "Plugin.MonsterSizeBar.dll": "1.0.1.6",
+      "Plugin.MonsterSizeBar.dll": "1.0.1.7",
       "icon.png": "C6B7FD913D275E864C17AFF8A70E61E3507A9E17983797EC39F2DFAFF1F351A3",
       "DefaultTheme.xaml": "InstallOnly"
     }
